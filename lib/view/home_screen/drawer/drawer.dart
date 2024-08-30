@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lifelinekerala/view/dashboard/dashboard.dart';
 import 'package:lifelinekerala/view/help_provided_list/help_provided_list.dart';
 import 'package:lifelinekerala/view/home_screen/drawer/widget/drawer_widget.dart';
-import 'package:lifelinekerala/view/home_screen/home.dart';
 import 'package:lifelinekerala/view/profile_screen/profile.dart';
 import 'package:lifelinekerala/view/transaction/transaction.dart';
 
@@ -42,7 +41,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Align(
+                            const Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 'User Name',
@@ -52,7 +51,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
@@ -76,7 +75,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(),
+                    builder: (context) => const ProfileScreen(),
                   ),
                 ),
               ),
@@ -87,7 +86,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DashBoardScreen(),
+                      builder: (context) => const DashBoardScreen(),
                     ),
                   );
                 },
@@ -99,7 +98,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TransactionScreen(),
+                      builder: (context) => const TransactionScreen(),
                     ),
                   );
                 },
@@ -111,7 +110,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HelpProvidedList(),
+                      builder: (context) => const HelpProvidedList(),
                     ),
                   );
                 },
@@ -123,7 +122,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DashBoardScreen(),
+                      builder: (context) => const DashBoardScreen(),
                     ),
                   );
                 },

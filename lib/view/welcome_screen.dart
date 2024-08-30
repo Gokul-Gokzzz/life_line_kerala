@@ -11,7 +11,12 @@ class WelcomeScreen extends StatelessWidget {
         children: [
           Container(
             decoration: const BoxDecoration(
-              color: Colors.black,
+              image: DecorationImage(
+                image: AssetImage(
+                  'assets/splashscreen.jpg',
+                ),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Center(

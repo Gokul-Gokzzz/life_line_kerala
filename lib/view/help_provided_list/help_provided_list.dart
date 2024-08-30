@@ -1,7 +1,7 @@
-// lib/view/help_provided_list/help_provided_list.dart
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:lifelinekerala/model/helpmodel/help_model.dart';
-
 import 'package:lifelinekerala/service/api_service.dart';
 import 'widget/help.dart';
 
@@ -25,33 +25,54 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.only(left: 15, top: 15, right: 15),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Your UI elements for the header
-                SizedBox(height: 50),
-                Text(
-                  'Help Provided List ',
+                Row(
+                  children: [
+                    const SizedBox(width: 260),
+                    Image.asset(
+                      'assets/bell.png',
+                      height: 25,
+                      width: 25,
+                    ),
+                    const SizedBox(width: 20),
+                    Image.asset(
+                      'assets/logout.png',
+                      height: 25,
+                      width: 25,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 50),
+                const Text(
+                  'Help Provided List',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 FutureBuilder<List<Help>>(
                   future: helpList,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Center(child: Text('Failed to load help list'));
+                      log('Error: ${snapshot.error}');
+                      return const Center(
+                          child: Text('Failed to load help list'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No help records available'));
+                      log('No data: ${snapshot.data}');
+                      return const Center(
+                          child: Text('No help records available'));
                     } else {
+                      log('Data received: ${snapshot.data}');
                       return Column(
                         children: snapshot.data!.map((help) {
                           return Center(
@@ -63,7 +84,7 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
                                     color: Colors.black12,
                                     blurRadius: 4,
@@ -81,12 +102,12 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                                         backgroundColor: Colors.blue,
                                         child: Image.asset('assets/person.png'),
                                       ),
-                                      SizedBox(width: 12),
+                                      const SizedBox(width: 12),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
+                                          const Text(
                                             'Name',
                                             style: TextStyle(
                                                 fontSize: 16,
@@ -94,7 +115,7 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                                           ),
                                           Text(
                                             help.memberName,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blue,
@@ -104,7 +125,7 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   InfoRow(title: 'Type', value: help.helpType),
                                   InfoRow(
                                       title: 'Incident Date',

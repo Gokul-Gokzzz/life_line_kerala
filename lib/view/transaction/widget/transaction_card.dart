@@ -1,4 +1,3 @@
-// lib/view/transaction/widget/transaction_card.dart
 import 'package:flutter/material.dart';
 
 class TransactionCard extends StatelessWidget {
@@ -15,94 +14,90 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          elevation: 4,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 32.0, 16.0, 16.0),
-            child: Row(
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today, color: Colors.white, size: 18),
+                  SizedBox(width: 8.0),
+                  Text(
+                    date,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Amount',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Amount',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
                       ),
-                      Text(
-                        '\$$amount',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent,
-                        ),
+                    ),
+                    SizedBox(height: 4.0),
+                    Text(
+                      amount,
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.redAccent,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Reference Number',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Reference Number',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
                       ),
-                      Text(
-                        referenceNumber,
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    Text(
+                      referenceNumber,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
+          ],
         ),
-        Positioned(
-          top: 0,
-          left: 16.0,
-          right: 148,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.calendar_today,
-                  color: Colors.white,
-                  size: 16.0,
-                ),
-                SizedBox(width: 8.0),
-                Text(
-                  date,
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

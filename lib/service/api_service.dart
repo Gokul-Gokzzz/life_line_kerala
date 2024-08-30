@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:lifelinekerala/model/confgmodel/config_model.dart';
 import 'package:lifelinekerala/model/helpmodel/help_model.dart';
 import 'package:lifelinekerala/model/loginmodel/login_model.dart';
 import 'package:lifelinekerala/model/transactionmodel/transaction_model.dart';
@@ -9,6 +10,16 @@ import 'package:lifelinekerala/model/usermodel/user_model.dart';
 class ApiService {
   final String baseUrl = 'https://lifelinekeralatrust.com/api/v1/';
   final Dio _dio = Dio();
+
+  Future<Config> fetchConfig() async {
+    final response =
+        await _dio.get('https://lifelinekeralatrust.com/api/v1/config');
+    if (response.statusCode == 200) {
+      return Config.fromJson(response.data);
+    } else {
+      throw Exception('Failed to load config');
+    }
+  }
 
   //---login---Service---//
   Future<LoginModel?> login(String userName, String password) async {
@@ -59,7 +70,7 @@ class ApiService {
     }
   }
 
-  //---- user==profilr---//
+//---- user==profilr---//
   Future<UserProfile?> getUserProfile(String memberId) async {
     final url = '${baseUrl}user/profile';
 
@@ -112,20 +123,31 @@ class ApiService {
   }
 
   //--transaction---//
-  Future<List<Transaction>> getTransactionList() async {
+  Future<List<Transaction>> getTransactionList(String memberId) async {
     const String url =
         'https://lifelinekeralatrust.com/api/v1/user/transactions';
 
     try {
-      final response = await _dio.get(url);
+      final response = await _dio.post(
+        url,
+        data: {'member_id': memberId}, // Add necessary POST data if required
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // if needed
+          },
+        ),
+      );
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data['list']['data'];
         return data.map((item) => Transaction.fromJson(item)).toList();
       } else {
+        log('Error: ${response.statusCode}');
         throw Exception('Failed to load transactions');
       }
     } catch (e) {
+      log('Exception: $e');
       throw Exception('Failed to load transactions: $e');
     }
   }
@@ -135,7 +157,15 @@ class ApiService {
     const String url = 'https://lifelinekeralatrust.com/api/v1/user/help_list';
 
     try {
-      final response = await _dio.get(url);
+      final response = await _dio.post(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data['list']['data'];
@@ -144,6 +174,7 @@ class ApiService {
         throw Exception('Failed to load help list');
       }
     } catch (e) {
+      log('Error: $e');
       throw Exception('Failed to load help list: $e');
     }
   }

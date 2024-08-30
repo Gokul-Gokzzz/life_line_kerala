@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lifelinekerala/view/dashboard/dashboard.dart';
 import 'package:lifelinekerala/view/help_provided_list/help_provided_list.dart';
 import 'package:lifelinekerala/view/home_screen/home.dart';
-import 'package:lifelinekerala/view/note_screen/note.dart';
-import 'package:lifelinekerala/view/notification_screen/notifiaction.dart';
 import 'package:lifelinekerala/view/profile_screen/profile.dart';
-import 'package:lifelinekerala/view/settings_screen/settings.dart';
 import 'package:lifelinekerala/view/transaction/transaction.dart';
 
 class BottombarScreens extends StatefulWidget {
@@ -24,7 +21,7 @@ class __BottombarScreensState extends State<BottombarScreens> {
     const DashBoardScreen(),
     const TransactionScreen(),
     const HelpProvidedList(),
-    ProfileScreen(),
+    const ProfileScreen(),
   ];
 
   @override

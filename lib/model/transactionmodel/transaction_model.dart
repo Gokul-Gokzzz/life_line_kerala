@@ -1,6 +1,6 @@
+// lib/model/transactionmodel/transaction_model.dart
 class Transaction {
   final int id;
-  final int memberId;
   final String date;
   final String upiId;
   final String referenceNumber;
@@ -10,7 +10,6 @@ class Transaction {
 
   Transaction({
     required this.id,
-    required this.memberId,
     required this.date,
     required this.upiId,
     required this.referenceNumber,
@@ -22,7 +21,6 @@ class Transaction {
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
       id: json['id'],
-      memberId: json['member_id'],
       date: json['date'] ?? '',
       upiId: json['upi_id'] ?? '',
       referenceNumber: json['reference_number'] ?? '',

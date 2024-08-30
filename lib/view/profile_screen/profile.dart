@@ -34,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _userProfile != null
@@ -60,44 +61,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildHeader() {
     return Row(
       children: [
-        Image.asset(
-          'assets/menus.png', // Replace with your menu icon asset
-          height: 30,
-          width: 30,
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-          child: Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search',
-                border: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                suffixIcon: Container(
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.search, color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 255),
         Image.asset(
           'assets/bell.png', // Replace with your notification icon asset
           height: 25,
           width: 25,
         ),
-        const SizedBox(width: 5),
+        const SizedBox(width: 20),
         Image.asset(
           'assets/logout.png', // Replace with your logout icon asset
           height: 25,

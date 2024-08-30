@@ -3,7 +3,6 @@ import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:lifelinekerala/service/api_service.dart';
 import 'package:lifelinekerala/view/bottom_bar/bottom_bar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,11 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (loginResponse != null) {
-      // Save credentials
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('username', username);
-      await prefs.setString('password', password);
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -59,25 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text('Login failed, please try again')),
       );
     }
-  }
-
-  Future<void> _loadCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? username = prefs.getString('username');
-    String? password = prefs.getString('password');
-
-    if (username != null && password != null) {
-      usernameController.text = username;
-      passwordController.text = password;
-
-      _attemptLogin();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCredentials();
   }
 
   @override
