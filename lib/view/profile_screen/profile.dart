@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:lifelinekerala/model/confgmodel/config_model.dart';
 import 'package:lifelinekerala/service/api_service.dart';
 import 'package:lifelinekerala/model/usermodel/user_model.dart';
-import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final ApiService _apiService = ApiService();
+  final ApiService apiService = ApiService();
   UserProfile? _userProfile;
+  Config? _config;
   bool _isLoading = true;
   bool _showFullDetails = false;
 
@@ -23,9 +24,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchUserProfile() async {
-    final profile = await _apiService.getUserProfile('5');
+    final profile = await apiService.getUserProfile('5');
+    final config = await apiService.getConfig();
     setState(() {
       _userProfile = profile;
+      _config = config;
       _isLoading = false;
     });
   }
@@ -37,18 +40,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.white,
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : _userProfile != null
+            : _userProfile != null && _config != null
                 ? Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildHeader(),
                           const SizedBox(height: 20),
-                          _buildProfileHeader(),
+                          buildProfileHeader(),
                           const SizedBox(height: 20),
-                          _buildProfileDetails(),
+                          buildProfileDetails(),
                         ],
                       ),
                     ),
@@ -58,26 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        const SizedBox(width: 255),
-        Image.asset(
-          'assets/bell.png', // Replace with your notification icon asset
-          height: 25,
-          width: 25,
-        ),
-        const SizedBox(width: 20),
-        Image.asset(
-          'assets/logout.png', // Replace with your logout icon asset
-          height: 25,
-          width: 25,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProfileHeader() {
+  Widget buildProfileHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -92,32 +75,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.blue,
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
             Row(
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.green,
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  child: Image.asset(
-                    'assets/person.png', // Replace with your person icon asset
-                    height: 80,
-                    width: 80,
-                  ),
+                  child: buildProfileImage(),
                 ),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _userProfile!.name ?? 'N/A',
+                      _userProfile!.name,
                       style: const TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,
                         fontSize: 30,
                       ),
                     ),
-                    Text(_userProfile!.districtName ?? 'N/A'),
+                    Text(_userProfile!.districtName),
                   ],
                 ),
               ],
@@ -129,7 +110,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileDetails() {
+  Widget buildProfileImage() {
+    final imageUrl =
+        '${_config!.baseUrls.customerImageUrl}/${_userProfile!.image}';
+    return Image.network(
+      imageUrl,
+      height: 80,
+      width: 80,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(Icons.person, size: 80, color: Colors.grey);
+      },
+    );
+  }
+
+  Widget buildProfileDetails() {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -166,31 +161,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Edit your details',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 10),
-          _buildProfileDetail('Name', _userProfile!.name ?? 'N/A'),
-          _buildProfileDetail('Lifeline ID', _userProfile!.lifelineId ?? 'N/A'),
-          _buildProfileDetail(
+          buildProfileDetail('Name', _userProfile!.name),
+          buildProfileDetail('Lifeline ID', _userProfile!.lifelineId),
+          buildProfileDetail(
               'Account Amount', _userProfile!.accountAmount.toString()),
-          _buildProfileDetail('Mobile', _userProfile!.mobile ?? 'N/A'),
-          _buildProfileDetail('UPI ID', _userProfile!.upiId ?? 'N/A'),
-          _buildProfileDetail('Place', _userProfile!.place ?? 'N/A'),
-          _buildProfileDetail(
-              'District Name', _userProfile!.districtName ?? 'N/A'),
-          _buildProfileDetail(
-              'Aadhaar Number', _userProfile!.aadhaarNumber ?? 'N/A'),
+          buildProfileDetail('Mobile', _userProfile!.mobile),
+          buildProfileDetail('UPI ID', _userProfile!.upiId),
+          buildProfileDetail('Place', _userProfile!.place),
+          buildProfileDetail('District Name', _userProfile!.districtName),
+          buildProfileDetail('Aadhaar Number', _userProfile!.aadhaarNumber),
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
@@ -200,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             child: Text(
               _showFullDetails ? 'Show Less' : 'Show Full Details',
-              style: TextStyle(color: Colors.blue),
+              style: const TextStyle(color: Colors.blue),
             ),
           ),
           if (_showFullDetails) _buildFullProfileDetails(),
@@ -209,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileDetail(String label, String value) {
+  Widget buildProfileDetail(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -225,8 +207,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildFullProfileDetails() {
-    final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-
+    final imageUrl =
+        '${_config!.baseUrls.customerImageUrl}/${_userProfile!.image}';
+    final signatureUrl =
+        '${_config!.baseUrls.customerImageUrl}/${_userProfile!.signature}';
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -245,33 +229,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProfileDetail('Email', _userProfile!.email ?? 'N/A'),
-          _buildProfileDetail('Address', _userProfile!.address ?? 'N/A'),
-          _buildProfileDetail('IFSC Code', _userProfile!.ifscCode ?? 'N/A'),
-          _buildProfileDetail('Image', _userProfile!.image ?? 'N/A'),
-          _buildProfileDetail('Signature', _userProfile!.signature ?? 'N/A'),
-          _buildProfileDetail(
-              'Other Documents', _userProfile!.otherDocumentDetails ?? 'N/A'),
-          _buildProfileDetail(
-            'Created At',
-            _formatDate(_userProfile!.createdAt),
-          ),
-          _buildProfileDetail(
-            'Updated At',
-            _formatDate(_userProfile!.updatedAt),
-          ),
+          buildProfileDetail('Email', _userProfile!.email),
+          buildProfileDetail('Address', _userProfile!.address),
+          buildProfileDetail('IFSC Code', _userProfile!.ifscCode),
+          buildProfileDetail('Profile Image', ''),
+          Image.network(imageUrl, height: 50, width: 100),
+          const SizedBox(height: 10),
+          buildProfileDetail('Signature', ''),
+          Image.network(signatureUrl, height: 50, width: 100),
+          buildProfileDetail(
+              'Other Documents', _userProfile!.otherDocumentDetails),
         ],
       ),
     );
-  }
-
-  String _formatDate(String? date) {
-    if (date == null) return 'N/A';
-    try {
-      final DateTime parsedDate = DateTime.parse(date);
-      return DateFormat('yyyy-MM-dd HH:mm:ss').format(parsedDate);
-    } catch (e) {
-      return 'Invalid date format';
-    }
   }
 }

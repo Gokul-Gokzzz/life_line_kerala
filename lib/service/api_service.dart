@@ -4,8 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:lifelinekerala/model/confgmodel/config_model.dart';
 import 'package:lifelinekerala/model/helpmodel/help_model.dart';
 import 'package:lifelinekerala/model/loginmodel/login_model.dart';
+import 'package:lifelinekerala/model/notificationmodel/notification_model.dart';
 import 'package:lifelinekerala/model/transactionmodel/transaction_model.dart';
+import 'package:lifelinekerala/model/usermodel/member_details.dart';
 import 'package:lifelinekerala/model/usermodel/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   final String baseUrl = 'https://lifelinekeralatrust.com/api/v1/';
@@ -22,6 +25,7 @@ class ApiService {
   }
 
   //---login---Service---//
+
   Future<LoginModel?> login(String userName, String password) async {
     final url = "${baseUrl}auth/login";
 
@@ -43,6 +47,48 @@ class ApiService {
     } catch (e) {
       log('Login failed with error: $e');
       return null;
+    }
+  }
+
+  Future<void> updateDeviceToken(String username) async {
+    final url = "${baseUrl}user/update_device_token";
+
+    try {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final deviceToken = sharedPreferences.getString('deviceToken') ?? '';
+
+      await _dio.post(
+        url,
+        data: {
+          'username': username,
+          'deviceToken': deviceToken,
+        },
+      );
+    } catch (e) {
+      log('Failed to update device token: $e');
+    }
+  }
+
+  Future<void> logout() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    // Clear saved user credentials
+    await sharedPreferences.remove('username');
+    await sharedPreferences.remove('password');
+
+    // Remove device token
+    final url = "${baseUrl}user/remove_device_token";
+    final deviceToken = sharedPreferences.getString('deviceToken') ?? '';
+
+    try {
+      await _dio.post(
+        url,
+        data: {
+          'deviceToken': deviceToken,
+        },
+      );
+    } catch (e) {
+      log('Failed to remove device token: $e');
     }
   }
 
@@ -71,7 +117,7 @@ class ApiService {
   }
 
 //---- user==profilr---//
-  Future<UserProfile?> getUserProfile(String memberId) async {
+  Future<UserProfile> getUserProfile(String memberId) async {
     final url = '${baseUrl}user/profile';
 
     try {
@@ -90,19 +136,36 @@ class ApiService {
             return UserProfile.fromJson(data);
           } else {
             log('Invalid data format');
-            return null;
+            throw Exception('Invalid data format');
           }
         } else {
           log('Invalid response format');
-          return null;
+          throw Exception('Invalid response format');
         }
       } else {
         log('Failed to fetch user profile with status code: ${response.statusCode}');
-        return null;
+        throw Exception('Failed to fetch user profile');
       }
     } catch (e) {
       log('Failed to fetch user profile with error: $e');
-      return null;
+      throw Exception('Failed to fetch user profile');
+    }
+  }
+
+  Future<Config> getConfig() async {
+    final url = 'https://lifelinekeralatrust.com/api/v1/config';
+
+    try {
+      final response = await _dio.get(url);
+
+      if (response.statusCode == 200) {
+        return Config.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load configuration');
+      }
+    } catch (e) {
+      log('Error fetching config: $e');
+      throw e;
     }
   }
 
@@ -130,11 +193,11 @@ class ApiService {
     try {
       final response = await _dio.post(
         url,
-        data: {'member_id': memberId}, // Add necessary POST data if required
+        data: {'member_id': memberId},
         options: Options(
           headers: {
             'Accept': 'application/json',
-            'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // if needed
+            'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
           },
         ),
       );
@@ -153,12 +216,13 @@ class ApiService {
   }
   //---help--list---//
 
-  Future<List<Help>> getHelpProvidedList() async {
+  Future<List<Help>> getHelpProvidedList(String memberId) async {
     const String url = 'https://lifelinekeralatrust.com/api/v1/user/help_list';
 
     try {
       final response = await _dio.post(
         url,
+        data: {'member_id': memberId},
         options: Options(
           headers: {
             'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
@@ -176,6 +240,58 @@ class ApiService {
     } catch (e) {
       log('Error: $e');
       throw Exception('Failed to load help list: $e');
+    }
+  }
+
+  Future<List<Help>> getHelpReceivedList(String memberId) async {
+    const String url = 'https://lifelinekeralatrust.com/api/v1/user/view';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: {'member_id': memberId},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data['help_received'];
+        return data.map((item) => Help.fromJson(item)).toList();
+      } else {
+        throw Exception('Failed to load help received list');
+      }
+    } catch (e) {
+      log('Error: $e');
+      throw Exception('Failed to load help received list: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchUserData(String memberId) async {
+    final response = await _dio.get(
+      'https://lifelinekeralatrust.com/api/v1/user/view',
+      queryParameters: {
+        'member_id': memberId,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data;
+      print(data);
+      return {
+        "memberDetails": MemberDetails.fromJson(data['member_details']),
+        "familyDetails": (data['family_details'] as List)
+            .map((family) => FamilyDetails.fromJson(family))
+            .toList(),
+        "helpReceived": (data['help_received'] as List)
+            .map((help) => HelpReceived.fromJson(help))
+            .toList(),
+      };
+    } else {
+      throw Exception('Failed to load user data');
     }
   }
 }

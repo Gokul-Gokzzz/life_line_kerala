@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:lifelinekerala/model/confgmodel/config_model.dart';
 import 'package:lifelinekerala/model/helpmodel/help_model.dart';
+import 'package:lifelinekerala/model/usermodel/user_model.dart';
 import 'package:lifelinekerala/service/api_service.dart';
 import 'widget/help.dart';
 
@@ -14,11 +16,22 @@ class HelpProvidedList extends StatefulWidget {
 
 class _HelpProvidedListState extends State<HelpProvidedList> {
   late Future<List<Help>> helpList;
+  UserProfile? _userProfile;
+  Config? _config;
 
   @override
   void initState() {
     super.initState();
-    helpList = ApiService().getHelpProvidedList();
+    // Initialize helpList with an empty Future
+    helpList = Future.value([]);
+    fetchInitialData();
+  }
+
+  Future<void> fetchInitialData() async {
+    _config = await ApiService().getConfig(); // Fetch Config
+    _userProfile = await ApiService().getUserProfile('5'); // Fetch UserProfile
+    helpList = ApiService().getHelpProvidedList('5'); // Fetch Help List
+    setState(() {}); // Update the state after data fetching is done
   }
 
   @override
@@ -28,37 +41,20 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
         backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.only(left: 15, top: 15, right: 15),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const SizedBox(width: 260),
-                    Image.asset(
-                      'assets/bell.png',
-                      height: 25,
-                      width: 25,
-                    ),
-                    const SizedBox(width: 20),
-                    Image.asset(
-                      'assets/logout.png',
-                      height: 25,
-                      width: 25,
-                    ),
-                  ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Help Provided List',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
                 ),
-                const SizedBox(height: 50),
-                const Text(
-                  'Help Provided List',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                FutureBuilder<List<Help>>(
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: FutureBuilder<List<Help>>(
                   future: helpList,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -69,16 +65,17 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                           child: Text('Failed to load help list'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       log('No data: ${snapshot.data}');
-                      return const Center(
-                          child: Text('No help records available'));
+                      return const Center(child: Text(''));
                     } else {
                       log('Data received: ${snapshot.data}');
-                      return Column(
-                        children: snapshot.data!.map((help) {
-                          return Center(
+                      return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          final help = snapshot.data![index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Container(
-                              width: 330,
-                              height: 200,
+                              width: double.infinity,
                               padding: const EdgeInsets.symmetric(
                                   vertical: 12.0, horizontal: 16.0),
                               decoration: BoxDecoration(
@@ -97,10 +94,12 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                                 children: [
                                   Row(
                                     children: [
-                                      CircleAvatar(
-                                        radius: 30,
-                                        backgroundColor: Colors.blue,
-                                        child: Image.asset('assets/person.png'),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                        child: buildProfileImage(),
                                       ),
                                       const SizedBox(width: 12),
                                       Column(
@@ -143,16 +142,37 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                               ),
                             ),
                           );
-                        }).toList(),
+                        },
                       );
                     }
                   },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildProfileImage() {
+    if (_config == null ||
+        _userProfile == null ||
+        _userProfile!.image.isEmpty) {
+      return const Icon(Icons.person, size: 80, color: Colors.grey);
+    }
+
+    final imageUrl =
+        '${_config!.baseUrls.customerImageUrl}/${_userProfile!.image}';
+
+    return Image.network(
+      imageUrl,
+      height: 80,
+      width: 80,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(Icons.person, size: 80, color: Colors.grey);
+      },
     );
   }
 }

@@ -50,22 +50,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              const SizedBox(width: 260),
-                              Image.asset(
-                                'assets/bell.png',
-                                height: 25,
-                                width: 25,
-                              ),
-                              const SizedBox(width: 20),
-                              Image.asset(
-                                'assets/logout.png',
-                                height: 25,
-                                width: 25,
-                              ),
-                            ],
-                          ),
                           const SizedBox(height: 50),
                           const Text(
                             'DashBoard',

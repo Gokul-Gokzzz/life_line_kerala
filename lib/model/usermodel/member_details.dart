@@ -1,126 +1,128 @@
+// member_details.dart
 class MemberDetails {
-  int? id;
-  int? districtId;
-  String? districtName;
-  String? lifelineId;
-  String? name;
-  String? username;
-  String? password;
-  String? mobile;
-  String? email;
-  String? upiId;
-  String? accountNumber;
-  String? ifscCode;
-  String? image;
-  String? signature;
-  String? dateOfBirth;
-  String? place;
-  String? address;
-  String? otherDocumentDetails;
-  String? aadhaarNumber;
-  int? accountAmount;
-  int? status;
-  int? terms;
-  String? createdAt;
-  String? updatedAt;
-  String? rememberToken;
-  String? cmFirebaseToken;
-  String? temporaryToken;
-  List<Null>? translations;
+  final int id;
+  final int districtId;
+  final String districtName;
+  final String lifelineId;
+  final String name;
+  final String username;
+  final String mobile;
+  final String upiId;
+  final String image;
+  final String signature;
+  final String dateOfBirth;
+  final String place;
+  final String address;
+  final String aadhaarNumber;
 
-  MemberDetails(
-      {this.id,
-      this.districtId,
-      this.districtName,
-      this.lifelineId,
-      this.name,
-      this.username,
-      this.password,
-      this.mobile,
-      this.email,
-      this.upiId,
-      this.accountNumber,
-      this.ifscCode,
-      this.image,
-      this.signature,
-      this.dateOfBirth,
-      this.place,
-      this.address,
-      this.otherDocumentDetails,
-      this.aadhaarNumber,
-      this.accountAmount,
-      this.status,
-      this.terms,
-      this.createdAt,
-      this.updatedAt,
-      this.rememberToken,
-      this.cmFirebaseToken,
-      this.temporaryToken,
-      this.translations});
+  MemberDetails({
+    required this.id,
+    required this.districtId,
+    required this.districtName,
+    required this.lifelineId,
+    required this.name,
+    required this.username,
+    required this.mobile,
+    required this.upiId,
+    required this.image,
+    required this.signature,
+    required this.dateOfBirth,
+    required this.place,
+    required this.address,
+    required this.aadhaarNumber,
+  });
 
-  MemberDetails.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    districtId = json['district_id'];
-    districtName = json['district_name'];
-    lifelineId = json['lifeline_id'];
-    name = json['name'];
-    username = json['username'];
-    password = json['password'];
-    mobile = json['mobile'];
-    email = json['email'];
-    upiId = json['upi_id'];
-    accountNumber = json['account_number'];
-    ifscCode = json['ifsc_code'];
-    image = json['image'];
-    signature = json['signature'];
-    dateOfBirth = json['date_of_birth'];
-    place = json['place'];
-    address = json['address'];
-    otherDocumentDetails = json['other_document_details'];
-    aadhaarNumber = json['aadhaar_number'];
-    accountAmount = json['account_amount'];
-    status = json['status'];
-    terms = json['terms'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    rememberToken = json['remember_token'];
-    cmFirebaseToken = json['cm_firebase_token'];
-    temporaryToken = json['temporary_token'];
-
-    json['translations'] = translations;
+  factory MemberDetails.fromJson(Map<String, dynamic> json) {
+    return MemberDetails(
+      id: json['id'],
+      districtId: json['district_id'],
+      districtName: json['district_name'],
+      lifelineId: json['lifeline_id'],
+      name: json['name'],
+      username: json['username'],
+      mobile: json['mobile'],
+      upiId: json['upi_id'],
+      image: json['image'],
+      signature: json['signature'],
+      dateOfBirth: json['date_of_birth'],
+      place: json['place'],
+      address: json['address'],
+      aadhaarNumber: json['aadhaar_number'],
+    );
   }
+}
 
-  Map<String, dynamic> toJson(data) {
-    data['id'] = id;
-    data['district_id'] = districtId;
-    data['district_name'] = districtName;
-    data['lifeline_id'] = lifelineId;
-    data['name'] = name;
-    data['username'] = username;
-    data['password'] = password;
-    data['mobile'] = mobile;
-    data['email'] = email;
-    data['upi_id'] = upiId;
-    data['account_number'] = accountNumber;
-    data['ifsc_code'] = ifscCode;
-    data['image'] = image;
-    data['signature'] = signature;
-    data['date_of_birth'] = dateOfBirth;
-    data['place'] = place;
-    data['address'] = address;
-    data['other_document_details'] = otherDocumentDetails;
-    data['aadhaar_number'] = aadhaarNumber;
-    data['account_amount'] = accountAmount;
-    data['status'] = status;
-    data['terms'] = terms;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    data['remember_token'] = rememberToken;
-    data['cm_firebase_token'] = cmFirebaseToken;
-    data['temporary_token'] = temporaryToken;
+// family_details.dart
+class FamilyDetails {
+  final int id;
+  final bool isHead;
+  final int memberId;
+  final String name;
+  final String relation;
+  final String phone;
+  final String email;
+  final String aadhaarNumber;
+  final String dob;
 
-    data['translations'] = translations;
+  FamilyDetails({
+    required this.id,
+    required this.isHead,
+    required this.memberId,
+    required this.name,
+    required this.relation,
+    required this.phone,
+    required this.email,
+    required this.aadhaarNumber,
+    required this.dob,
+  });
 
-    return data;
+  factory FamilyDetails.fromJson(Map<String, dynamic> json) {
+    return FamilyDetails(
+      id: json['id'],
+      isHead: json['is_head'] == 1,
+      memberId: json['member_id'],
+      name: json['name'],
+      relation: json['relation'],
+      phone: json['phone'],
+      email: json['email'],
+      aadhaarNumber: json['adhaar_number'],
+      dob: json['dob'],
+    );
+  }
+}
+
+// help_received.dart
+class HelpReceived {
+  final int id;
+  final int memberId;
+  final int memberFamilyId;
+  final String helpType;
+  final String incidentDate;
+  final String creditedDate;
+  final String creditedAmount;
+  final String familyMemberName;
+
+  HelpReceived({
+    required this.id,
+    required this.memberId,
+    required this.memberFamilyId,
+    required this.helpType,
+    required this.incidentDate,
+    required this.creditedDate,
+    required this.creditedAmount,
+    required this.familyMemberName,
+  });
+
+  factory HelpReceived.fromJson(Map<String, dynamic> json) {
+    return HelpReceived(
+      id: json['id'],
+      memberId: json['member_id'],
+      memberFamilyId: json['member_family_id'],
+      helpType: json['help_type'],
+      incidentDate: json['incident_date'],
+      creditedDate: json['credited_date'],
+      creditedAmount: json['credited_amount'],
+      familyMemberName: json['family_member_name'],
+    );
   }
 }
