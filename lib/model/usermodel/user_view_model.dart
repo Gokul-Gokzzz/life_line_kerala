@@ -24,16 +24,15 @@ class userViewModel {
     helpReceived = json['helpReceived'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
+  Map<String, dynamic> toJson(data) {
+    data['status'] = status;
+    data['message'] = message;
 
-    data['member_details'] = this.memberDetails;
+    data['member_details'] = memberDetails;
 
-    data['family_details'] = this.familyDetails;
+    data['family_details'] = familyDetails;
 
-    data['help_received'] = this.helpReceived;
+    data['help_received'] = helpReceived;
 
     return data;
   }

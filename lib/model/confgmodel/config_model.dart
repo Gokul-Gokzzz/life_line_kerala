@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Config {
   final String companyPhone;
   final String companyName;

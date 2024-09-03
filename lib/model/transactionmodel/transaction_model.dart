@@ -1,4 +1,3 @@
-// lib/model/transactionmodel/transaction_model.dart
 class Transaction {
   final int id;
   final String date;

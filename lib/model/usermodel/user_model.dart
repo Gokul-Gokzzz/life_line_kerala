@@ -1,5 +1,3 @@
-import 'package:lifelinekerala/model/usermodel/member_details.dart';
-
 class UserProfile {
   final int id;
   final int districtId;

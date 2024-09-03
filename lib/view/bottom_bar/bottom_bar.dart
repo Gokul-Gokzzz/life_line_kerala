@@ -60,15 +60,21 @@ class __BottombarScreensState extends State<BottombarScreens> {
             },
             items: [
               buildBottomNavigationBarItem(
-                  imagePath: 'assets/home.png', index: 0),
+                  imagePath: 'assets/home.png', index: 0, label: 'Home'),
               buildBottomNavigationBarItem(
-                  imagePath: 'assets/dashboardicon.png', index: 1),
+                  imagePath: 'assets/dashboardicon.png',
+                  index: 1,
+                  label: 'Dashboard'),
               buildBottomNavigationBarItem(
-                  imagePath: 'assets/transactionicon.png', index: 2),
+                  imagePath: 'assets/transactionicon.png',
+                  index: 2,
+                  label: 'Transaction'),
               buildBottomNavigationBarItem(
-                  imagePath: 'assets/helpprovided.png', index: 3),
+                  imagePath: 'assets/helpprovided.png',
+                  index: 3,
+                  label: 'Help Provided '),
               buildBottomNavigationBarItem(
-                  imagePath: 'assets/user.png', index: 4),
+                  imagePath: 'assets/user.png', index: 4, label: 'Profile'),
             ],
           ),
         ),
@@ -78,7 +84,7 @@ class __BottombarScreensState extends State<BottombarScreens> {
   }
 
   BottomNavigationBarItem buildBottomNavigationBarItem(
-      {required String imagePath, required int index}) {
+      {required String imagePath, required int index, required String label}) {
     return BottomNavigationBarItem(
       icon: Padding(
         padding: const EdgeInsets.only(top: 10),
@@ -96,7 +102,7 @@ class __BottombarScreensState extends State<BottombarScreens> {
           ),
         ),
       ),
-      label: '',
+      label: label,
     );
   }
 }

@@ -1,4 +1,3 @@
-// member_details.dart
 class MemberDetails {
   final int id;
   final int districtId;
@@ -6,14 +5,28 @@ class MemberDetails {
   final String lifelineId;
   final String name;
   final String username;
+  final String password;
   final String mobile;
+  final String email;
   final String upiId;
+  final String accountNumber;
+  final String ifscCode;
   final String image;
   final String signature;
   final String dateOfBirth;
   final String place;
   final String address;
+  final String otherDocumentDetails;
   final String aadhaarNumber;
+  final int accountAmount;
+  final int status;
+  final int terms;
+  final String createdAt;
+  final String updatedAt;
+  final String rememberToken;
+  final String cmFirebaseToken;
+  final String deviceToken;
+  final String temporaryToken;
 
   MemberDetails({
     required this.id,
@@ -22,40 +35,66 @@ class MemberDetails {
     required this.lifelineId,
     required this.name,
     required this.username,
+    required this.password,
     required this.mobile,
+    required this.email,
     required this.upiId,
+    required this.accountNumber,
+    required this.ifscCode,
     required this.image,
     required this.signature,
     required this.dateOfBirth,
     required this.place,
     required this.address,
+    required this.otherDocumentDetails,
     required this.aadhaarNumber,
+    required this.accountAmount,
+    required this.status,
+    required this.terms,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rememberToken,
+    required this.cmFirebaseToken,
+    required this.deviceToken,
+    required this.temporaryToken,
   });
-
   factory MemberDetails.fromJson(Map<String, dynamic> json) {
     return MemberDetails(
       id: json['id'],
-      districtId: json['district_id'],
-      districtName: json['district_name'],
-      lifelineId: json['lifeline_id'],
-      name: json['name'],
-      username: json['username'],
-      mobile: json['mobile'],
-      upiId: json['upi_id'],
-      image: json['image'],
-      signature: json['signature'],
-      dateOfBirth: json['date_of_birth'],
-      place: json['place'],
-      address: json['address'],
-      aadhaarNumber: json['aadhaar_number'],
+      districtId: json['district_id'] ?? 0,
+      districtName: json['district_name'] ?? '',
+      lifelineId: json['lifeline_id'] ?? '',
+      name: json['name'] ?? '',
+      username: json['username'] ?? '',
+      password: json['password'] ?? '',
+      mobile: json['mobile'] ?? '',
+      email: json['email'] ?? '',
+      upiId: json['upi_id'] ?? '',
+      accountNumber: json['account_number'] ?? '',
+      ifscCode: json['ifsc_code'] ?? '',
+      image: json['image'] ?? '',
+      signature: json['signature'] ?? '',
+      dateOfBirth: json['date_of_birth'] ?? '',
+      place: json['place'] ?? '',
+      address: json['address'] ?? '',
+      otherDocumentDetails: json['other_document_details'] ?? '',
+      aadhaarNumber: json['aadhaar_number'] ?? '',
+      accountAmount: json['account_amount'] ?? 0,
+      status: json['status'] ?? 0,
+      terms: json['terms'] ?? 0,
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      rememberToken: json['remember_token'] ?? '',
+      cmFirebaseToken: json['cm_firebase_token'] ?? '',
+      deviceToken: json['device_token'] ?? '',
+      temporaryToken: json['temporary_token'] ?? '',
     );
   }
 }
 
-// family_details.dart
 class FamilyDetails {
   final int id;
-  final bool isHead;
+  final int isHead;
   final int memberId;
   final String name;
   final String relation;
@@ -79,7 +118,7 @@ class FamilyDetails {
   factory FamilyDetails.fromJson(Map<String, dynamic> json) {
     return FamilyDetails(
       id: json['id'],
-      isHead: json['is_head'] == 1,
+      isHead: json['is_head'],
       memberId: json['member_id'],
       name: json['name'],
       relation: json['relation'],
@@ -91,7 +130,6 @@ class FamilyDetails {
   }
 }
 
-// help_received.dart
 class HelpReceived {
   final int id;
   final int memberId;
@@ -100,6 +138,9 @@ class HelpReceived {
   final String incidentDate;
   final String creditedDate;
   final String creditedAmount;
+  final String chequeNumber;
+  final String otherRefNumber;
+  final String helpImage;
   final String familyMemberName;
 
   HelpReceived({
@@ -110,6 +151,9 @@ class HelpReceived {
     required this.incidentDate,
     required this.creditedDate,
     required this.creditedAmount,
+    required this.chequeNumber,
+    required this.otherRefNumber,
+    required this.helpImage,
     required this.familyMemberName,
   });
 
@@ -122,6 +166,9 @@ class HelpReceived {
       incidentDate: json['incident_date'],
       creditedDate: json['credited_date'],
       creditedAmount: json['credited_amount'],
+      chequeNumber: json['cheque_number'] ?? '',
+      otherRefNumber: json['other_ref_number'] ?? '',
+      helpImage: json['help_image'] ?? '',
       familyMemberName: json['family_member_name'],
     );
   }

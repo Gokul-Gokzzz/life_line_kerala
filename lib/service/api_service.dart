@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:lifelinekerala/model/confgmodel/config_model.dart';
 import 'package:lifelinekerala/model/helpmodel/help_model.dart';
 import 'package:lifelinekerala/model/loginmodel/login_model.dart';
-import 'package:lifelinekerala/model/notificationmodel/notification_model.dart';
 import 'package:lifelinekerala/model/transactionmodel/transaction_model.dart';
 import 'package:lifelinekerala/model/usermodel/member_details.dart';
 import 'package:lifelinekerala/model/usermodel/user_model.dart';
@@ -107,11 +106,11 @@ class ApiService {
         final userProfile = UserProfile.fromJson(response.data['data']);
         return userProfile;
       } else {
-        print('Failed to load profile. Message: ${response.data['message']}');
+        log('Failed to load profile. Message: ${response.data['message']}');
         return null;
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       return null;
     }
   }
@@ -126,7 +125,7 @@ class ApiService {
         data: {'member_id': memberId},
       );
 
-      log('Response data: ${response.data}');
+      // log('Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final responseBody = response.data;
@@ -216,7 +215,7 @@ class ApiService {
   }
   //---help--list---//
 
-  Future<List<Help>> getHelpProvidedList(String memberId) async {
+  Future<List<HelpModel>> getHelpProvidedList(String memberId) async {
     const String url = 'https://lifelinekeralatrust.com/api/v1/user/help_list';
 
     try {
@@ -233,7 +232,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data['list']['data'];
-        return data.map((item) => Help.fromJson(item)).toList();
+        return data.map((item) => HelpModel.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load help list');
       }
@@ -243,7 +242,7 @@ class ApiService {
     }
   }
 
-  Future<List<Help>> getHelpReceivedList(String memberId) async {
+  Future<List<HelpModel>> getHelpReceivedList(String memberId) async {
     const String url = 'https://lifelinekeralatrust.com/api/v1/user/view';
 
     try {
@@ -260,7 +259,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data['help_received'];
-        return data.map((item) => Help.fromJson(item)).toList();
+        return data.map((item) => HelpModel.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load help received list');
       }
@@ -292,6 +291,65 @@ class ApiService {
       };
     } else {
       throw Exception('Failed to load user data');
+    }
+  }
+
+  Future<MemberDetails> fetchMemberDetails(String memberId) async {
+    try {
+      final response = await _dio.post(
+        'https://lifelinekeralatrust.com/api/v1/user/view',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+            'Content-Type': 'application/json',
+          },
+        ),
+        data: {
+          'member_id': memberId,
+        },
+      );
+      if (response.statusCode == 200) {
+        log('Response data: ${response.data}');
+        var data = response.data['member_details'];
+        if (data != null) {
+          return MemberDetails.fromJson(data);
+        } else {
+          throw Exception('Member details are missing from the response');
+        }
+      } else {
+        throw Exception('Failed to load member details');
+      }
+    } catch (e) {
+      log('Failed to load member details: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<FamilyDetails>> fetchFamilyDetails(String memberId) async {
+    try {
+      final response = await _dio.post(
+        'https://lifelinekeralatrust.com/api/v1/user/view',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+            'Content-Type': 'application/json',
+          },
+        ),
+        data: {
+          'member_id': memberId,
+        },
+      );
+      if (response.statusCode == 200) {
+        var familyDetailsData = response.data['family_details'] as List;
+        return familyDetailsData
+            .map((familyDetail) => FamilyDetails.fromJson(familyDetail))
+            .toList();
+      } else {
+        throw Exception('Failed to load family details');
+      }
+    } catch (e) {
+      log('Failed to load family details: $e');
+      rethrow;
     }
   }
 }

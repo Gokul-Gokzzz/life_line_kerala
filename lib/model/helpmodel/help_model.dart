@@ -1,4 +1,4 @@
-class Help {
+class HelpModel {
   final int id;
   final int memberId;
   final int memberFamilyId;
@@ -12,8 +12,9 @@ class Help {
   final String familyMemberName;
   final String lifelineId;
   final String memberName;
+  final String imagePath;
 
-  Help({
+  HelpModel({
     required this.id,
     required this.memberId,
     required this.memberFamilyId,
@@ -27,10 +28,11 @@ class Help {
     required this.familyMemberName,
     required this.lifelineId,
     required this.memberName,
+    required this.imagePath,
   });
 
-  factory Help.fromJson(Map<String, dynamic> json) {
-    return Help(
+  factory HelpModel.fromJson(Map<String, dynamic> json) {
+    return HelpModel(
       id: json['id'],
       memberId: json['member_id'],
       memberFamilyId: json['member_family_id'],
@@ -44,6 +46,7 @@ class Help {
       familyMemberName: json['family_member_name'] ?? '',
       lifelineId: json['lifeline_id'] ?? '',
       memberName: json['member_name'] ?? '',
+      imagePath: json['image_path'] ?? '',
     );
   }
 }

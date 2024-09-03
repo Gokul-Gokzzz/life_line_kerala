@@ -50,6 +50,41 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            children: [
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: 'Search',
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 10),
+                                      suffixIcon: Container(
+                                        width: 60,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: const Icon(Icons.search,
+                                            color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              const SizedBox(width: 5),
+                            ],
+                          ),
                           const SizedBox(height: 50),
                           const Text(
                             'DashBoard',
@@ -60,7 +95,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                             ),
                           ),
                           const SizedBox(height: 30),
-                          _buildProfileDetails(),
+                          buildProfileDetails(),
                         ],
                       ),
                     ),
@@ -70,7 +105,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
   }
 
-  Widget _buildProfileDetails() {
+  Widget buildProfileDetails() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

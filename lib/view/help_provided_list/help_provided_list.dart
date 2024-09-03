@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:lifelinekerala/model/confgmodel/config_model.dart';
 import 'package:lifelinekerala/model/helpmodel/help_model.dart';
@@ -15,23 +14,50 @@ class HelpProvidedList extends StatefulWidget {
 }
 
 class _HelpProvidedListState extends State<HelpProvidedList> {
-  late Future<List<Help>> helpList;
+  late Future<List<HelpModel>> _helpList;
+  List<HelpModel>? _filteredHelpList;
   UserProfile? _userProfile;
+
   Config? _config;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Initialize helpList with an empty Future
-    helpList = Future.value([]);
+    _helpList = Future.value([]);
     fetchInitialData();
   }
 
   Future<void> fetchInitialData() async {
-    _config = await ApiService().getConfig(); // Fetch Config
-    _userProfile = await ApiService().getUserProfile('5'); // Fetch UserProfile
-    helpList = ApiService().getHelpProvidedList('5'); // Fetch Help List
-    setState(() {}); // Update the state after data fetching is done
+    _config = await ApiService().getConfig();
+    _userProfile = await ApiService().getUserProfile('5');
+    final helpList = await ApiService().getHelpProvidedList('5');
+    setState(() {
+      _filteredHelpList = helpList;
+    });
+  }
+
+  Future<void> _refreshHelpList() async {
+    final helpList = await ApiService().getHelpProvidedList('5');
+    setState(() {
+      _filteredHelpList = helpList;
+    });
+  }
+
+  void _filterHelpList(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _filteredHelpList = _filteredHelpList;
+      });
+    } else {
+      setState(() {
+        _filteredHelpList = _filteredHelpList?.where((help) {
+          final memberNameLower = help.memberName.toLowerCase();
+          final searchLower = query.toLowerCase();
+          return memberNameLower.contains(searchLower);
+        }).toList();
+      });
+    }
   }
 
   @override
@@ -44,6 +70,41 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          suffixIcon: Container(
+                            width: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child:
+                                const Icon(Icons.search, color: Colors.white),
+                          ),
+                        ),
+                        onChanged: _filterHelpList,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
+              const SizedBox(height: 20),
               const Text(
                 'Help Provided List',
                 style: TextStyle(
@@ -54,8 +115,8 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: FutureBuilder<List<Help>>(
-                  future: helpList,
+                child: FutureBuilder<List<HelpModel>>(
+                  future: _helpList,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -63,86 +124,93 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                       log('Error: ${snapshot.error}');
                       return const Center(
                           child: Text('Failed to load help list'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    } else if (!snapshot.hasData ||
+                        _filteredHelpList == null ||
+                        _filteredHelpList!.isEmpty) {
                       log('No data: ${snapshot.data}');
-                      return const Center(child: Text(''));
+                      return const Center(child: Text('No help provided.'));
                     } else {
                       log('Data received: ${snapshot.data}');
-                      return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final help = snapshot.data![index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
+                      return RefreshIndicator(
+                        onRefresh: _refreshHelpList,
+                        child: ListView.builder(
+                          itemCount: _filteredHelpList!.length,
+                          itemBuilder: (context, index) {
+                            final help = _filteredHelpList![index];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 16.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                          ),
+                                          child: buildProfileImage(),
                                         ),
-                                        child: buildProfileImage(),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            'Name',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            help.memberName,
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blue,
+                                        const SizedBox(width: 12),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              'Name',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  InfoRow(title: 'Type', value: help.helpType),
-                                  InfoRow(
-                                      title: 'Incident Date',
-                                      value: help.incidentDate),
-                                  InfoRow(
-                                      title: 'Cheque Number',
-                                      value: help.chequeNumber),
-                                  InfoRow(
-                                      title: 'Credited Date',
-                                      value: help.creditedDate),
-                                  InfoRow(
-                                      title: 'Credited Amount',
-                                      value: help.creditedAmount),
-                                ],
+                                            Text(
+                                              help.memberName,
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.blue,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    InfoRow(
+                                        title: 'Type', value: help.helpType),
+                                    InfoRow(
+                                        title: 'Incident Date',
+                                        value: help.incidentDate),
+                                    InfoRow(
+                                        title: 'Cheque Number',
+                                        value: help.chequeNumber),
+                                    InfoRow(
+                                        title: 'Credited Date',
+                                        value: help.creditedDate),
+                                    InfoRow(
+                                        title: 'Credited Amount',
+                                        value: help.creditedAmount),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       );
                     }
                   },

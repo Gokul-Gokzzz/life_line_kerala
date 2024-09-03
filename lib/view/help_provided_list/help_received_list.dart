@@ -13,14 +13,43 @@ class HelpReceivedScreen extends StatefulWidget {
 }
 
 class _HelpReceivedScreenState extends State<HelpReceivedScreen> {
-  late Future<List<Help>> helpReceivedList;
+  late Future<List<HelpModel>> helpReceivedList;
   late Future<Config> config;
+  List<HelpModel>? _filteredHelpReceivedList;
+  List<HelpModel>? _allHelpReceivedList;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     config = ApiService().getConfig();
     helpReceivedList = ApiService().getHelpReceivedList('5');
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _filteredHelpReceivedList = _filterHelpReceivedList(
+        _searchController.text,
+      );
+    });
+  }
+
+  List<HelpModel>? _filterHelpReceivedList(String query) {
+    if (query.isEmpty) {
+      return _allHelpReceivedList;
+    }
+    return _allHelpReceivedList
+        ?.where((help) =>
+            help.familyMemberName.toLowerCase().contains(query.toLowerCase()) ||
+            help.helpType.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   @override
@@ -35,18 +64,34 @@ class _HelpReceivedScreenState extends State<HelpReceivedScreen> {
             children: [
               Row(
                 children: [
-                  const SizedBox(width: 260),
-                  Image.asset(
-                    'assets/bell.png',
-                    height: 25,
-                    width: 25,
-                  ),
                   const SizedBox(width: 20),
-                  Image.asset(
-                    'assets/logout.png',
-                    height: 25,
-                    width: 25,
+                  Expanded(
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          suffixIcon: Container(
+                            width: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Icon(Icons.search, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 10),
                 ],
               ),
               const SizedBox(height: 50),
@@ -60,7 +105,7 @@ class _HelpReceivedScreenState extends State<HelpReceivedScreen> {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: FutureBuilder<List<Help>>(
+                child: FutureBuilder<List<HelpModel>>(
                   future: helpReceivedList,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,6 +120,12 @@ class _HelpReceivedScreenState extends State<HelpReceivedScreen> {
                           child: Text('No help records available'));
                     } else {
                       log('Data received: ${snapshot.data}');
+                      final helpList = snapshot.data!;
+                      _allHelpReceivedList =
+                          helpList; // Update allHelpReceivedList
+                      _filteredHelpReceivedList = _filterHelpReceivedList(
+                        _searchController.text,
+                      );
                       return FutureBuilder<Config>(
                         future: config,
                         builder: (context, configSnapshot) {
@@ -92,11 +143,11 @@ class _HelpReceivedScreenState extends State<HelpReceivedScreen> {
                           } else {
                             final configData = configSnapshot.data!;
                             return ListView.builder(
-                              itemCount: snapshot.data!.length,
+                              itemCount: _filteredHelpReceivedList!.length,
                               itemBuilder: (context, index) {
-                                final help = snapshot.data![index];
+                                final help = _filteredHelpReceivedList![index];
                                 final imageUrl =
-                                    '${configData.baseUrls.customerImageUrl}';
+                                    '${configData.baseUrls.customerImageUrl}/${help.imagePath}'; // Append the specific image path to the base URL
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 8.0),
