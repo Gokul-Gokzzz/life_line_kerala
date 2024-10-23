@@ -16,7 +16,37 @@ class _TransactionScreenState extends State<TransactionScreen> {
   @override
   void initState() {
     super.initState();
-    _transactionList = ApiService().getTransactionList('5');
+    _transactionList = ApiService().getTransactionList();
+  }
+
+  void _showQrScannerImage() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/qrcode.png',
+                fit: BoxFit.cover,
+                height: 350,
+              ), // Your QR scanner image
+              const SizedBox(height: 16),
+              Text('Place the QR code in front of the scanner.'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -58,7 +88,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const SizedBox(width: 5),
                 ],
               ),
               const SizedBox(height: 20),
@@ -100,6 +129,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
               ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showQrScannerImage,
+          child: const Icon(Icons.payment),
         ),
       ),
     );

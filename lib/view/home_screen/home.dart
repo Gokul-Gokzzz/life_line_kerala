@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _config = ApiService().fetchConfig();
-    _userProfile = ApiService().getUserProfile('5');
+    _userProfile = ApiService().getUserProfile();
     _loadUnreadNotificationsCount();
   }
 

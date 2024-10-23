@@ -14,7 +14,7 @@ class _MemberListScreenState extends State<MemberListScreen> {
   @override
   void initState() {
     super.initState();
-    _memberDetails = ApiService().fetchMemberDetails('5');
+    _memberDetails = ApiService().fetchMemberDetails();
   }
 
   @override

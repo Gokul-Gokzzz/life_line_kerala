@@ -23,7 +23,7 @@ class _HelpReceivedScreenState extends State<HelpReceivedScreen> {
   void initState() {
     super.initState();
     config = ApiService().getConfig();
-    helpReceivedList = ApiService().getHelpReceivedList('5');
+    helpReceivedList = ApiService().getHelpReceivedList();
     _searchController.addListener(_onSearchChanged);
   }
 

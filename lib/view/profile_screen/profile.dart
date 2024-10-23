@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchUserProfile() async {
-    final profile = await apiService.getUserProfile('5');
+    final profile = await apiService.getUserProfile();
     final config = await apiService.getConfig();
     setState(() {
       _userProfile = profile;

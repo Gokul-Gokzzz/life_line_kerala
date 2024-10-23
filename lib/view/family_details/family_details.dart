@@ -14,7 +14,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   void initState() {
     super.initState();
     _familyDetails =
-        ApiService().fetchFamilyDetails('5'); // Fetching family details
+        ApiService().fetchFamilyDetails(); // Fetching family details
   }
 
   @override

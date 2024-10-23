@@ -30,15 +30,15 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
 
   Future<void> fetchInitialData() async {
     _config = await ApiService().getConfig();
-    _userProfile = await ApiService().getUserProfile('5');
-    final helpList = await ApiService().getHelpProvidedList('5');
+    _userProfile = await ApiService().getUserProfile();
+    final helpList = await ApiService().getHelpProvidedList();
     setState(() {
       _filteredHelpList = helpList;
     });
   }
 
   Future<void> _refreshHelpList() async {
-    final helpList = await ApiService().getHelpProvidedList('5');
+    final helpList = await ApiService().getHelpProvidedList();
     setState(() {
       _filteredHelpList = helpList;
     });

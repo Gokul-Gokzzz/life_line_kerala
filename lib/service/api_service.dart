@@ -7,6 +7,7 @@ import 'package:lifelinekerala/model/loginmodel/login_model.dart';
 import 'package:lifelinekerala/model/transactionmodel/transaction_model.dart';
 import 'package:lifelinekerala/model/usermodel/member_details.dart';
 import 'package:lifelinekerala/model/usermodel/user_model.dart';
+import 'package:lifelinekerala/service/store_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
@@ -27,18 +28,37 @@ class ApiService {
 
   Future<LoginModel?> login(String userName, String password) async {
     final url = "${baseUrl}auth/login";
-
+    log('url${url}');
     try {
       final response = await _dio.post(
         url,
         data: {
-          'userName': userName,
+          'username': userName,
           'password': password,
         },
       );
-
+      log('ststus response${response.statusCode}');
+      log("data${response.data}");
       if (response.statusCode == 200) {
-        return LoginModel.fromJson(response.data);
+        // final data = response.data;
+        log(response.data['data']);
+        log("data['data']");
+        // log('data status:${data['status']}');
+        if (response.data['status'] == true) {
+          final loginModel = LoginModel.fromJson(response.data['data']);
+
+          // Save member_id to SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          if (loginModel.id != null) {
+            await StoreService.setLoginUserId(loginModel.id!.toString());
+            await prefs.setString('member_id', loginModel.id!.toString());
+          }
+
+          return loginModel;
+        } else {
+          log('Login failed with message: ${response.data['message']}');
+          return null;
+        }
       } else {
         log('Login failed with status code: ${response.statusCode}');
         return null;
@@ -116,10 +136,11 @@ class ApiService {
   }
 
 //---- user==profilr---//
-  Future<UserProfile> getUserProfile(String memberId) async {
+  Future<UserProfile> getUserProfile() async {
     final url = '${baseUrl}user/profile';
 
     try {
+      final memberId = await StoreService.getLoginUserId();
       final response = await _dio.post(
         url,
         data: {'member_id': memberId},
@@ -169,6 +190,7 @@ class ApiService {
   }
 
   //---dashboard--//
+
   Future<UserProfile?> getDashboard() async {
     try {
       final response = await _dio
@@ -185,11 +207,12 @@ class ApiService {
   }
 
   //--transaction---//
-  Future<List<Transaction>> getTransactionList(String memberId) async {
+  Future<List<Transaction>> getTransactionList() async {
     const String url =
         'https://lifelinekeralatrust.com/api/v1/user/transactions';
 
     try {
+      final memberId = await StoreService.getLoginUserId();
       final response = await _dio.post(
         url,
         data: {'member_id': memberId},
@@ -215,10 +238,11 @@ class ApiService {
   }
   //---help--list---//
 
-  Future<List<HelpModel>> getHelpProvidedList(String memberId) async {
-    const String url = 'https://lifelinekeralatrust.com/api/v1/user/help_list';
+  Future<List<HelpModel>> getHelpProvidedList() async {
+    const String url = 'https://akpa.in/santhwanam/api/v1/user/help_list';
 
     try {
+      final memberId = await StoreService.getLoginUserId();
       final response = await _dio.post(
         url,
         data: {'member_id': memberId},
@@ -242,10 +266,11 @@ class ApiService {
     }
   }
 
-  Future<List<HelpModel>> getHelpReceivedList(String memberId) async {
+  Future<List<HelpModel>> getHelpReceivedList() async {
     const String url = 'https://lifelinekeralatrust.com/api/v1/user/view';
 
     try {
+      final memberId = await StoreService.getLoginUserId();
       final response = await _dio.post(
         url,
         data: {'member_id': memberId},
@@ -269,7 +294,8 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchUserData(String memberId) async {
+  Future<Map<String, dynamic>> fetchUserData() async {
+    final memberId = await StoreService.getLoginUserId();
     final response = await _dio.get(
       'https://lifelinekeralatrust.com/api/v1/user/view',
       queryParameters: {
@@ -294,8 +320,9 @@ class ApiService {
     }
   }
 
-  Future<MemberDetails> fetchMemberDetails(String memberId) async {
+  Future<MemberDetails> fetchMemberDetails() async {
     try {
+      final memberId = await StoreService.getLoginUserId();
       final response = await _dio.post(
         'https://lifelinekeralatrust.com/api/v1/user/view',
         options: Options(
@@ -325,8 +352,9 @@ class ApiService {
     }
   }
 
-  Future<List<FamilyDetails>> fetchFamilyDetails(String memberId) async {
+  Future<List<FamilyDetails>> fetchFamilyDetails() async {
     try {
+      final memberId = await StoreService.getLoginUserId();
       final response = await _dio.post(
         'https://lifelinekeralatrust.com/api/v1/user/view',
         options: Options(

@@ -15,4 +15,14 @@ class StoreService {
     final sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.clear();
   }
+
+    static Future<String?> getLoginUserId() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.getString('member_id');
+  }
+
+  static Future<bool> setLoginUserId(String id) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return await sharedPreferences.setString('member_id', id);
+  }
 }

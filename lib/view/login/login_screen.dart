@@ -36,9 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     String username = usernameController.text;
     String password = passwordController.text;
-
+    log('name${username}');
+    log('pass${password}');
     final loginResponse = await _apiService.login(username, password);
-
+    log('response${loginResponse}');
     setState(() {
       _isLoading = false;
     });
@@ -218,6 +219,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         minimumSize: const Size(300, 50),
                       ),
                       onPressed: () async {
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => BottombarScreens(),
+                        //   ),
+                        // );
                         if (formKey.currentState!.validate()) {
                           try {
                             await _attemptLogin();

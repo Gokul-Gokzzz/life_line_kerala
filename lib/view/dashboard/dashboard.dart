@@ -23,7 +23,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   Future<void> _fetchUserProfile() async {
     try {
-      final profile = await _apiService.getUserProfile('5');
+      final profile = await _apiService.getUserProfile();
       setState(() {
         _userProfile = profile;
         _isLoading = false;
