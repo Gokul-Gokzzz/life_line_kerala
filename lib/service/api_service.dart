@@ -38,11 +38,11 @@ class ApiService {
         },
       );
       log('ststus response${response.statusCode}');
-      log("data${response.data}");
-      if (response.statusCode == 200) {
+      // log("data${response.data}");
+      if (response.statusCode!.toInt() == 200) {
         // final data = response.data;
-        log(response.data['data']);
-        log("data['data']");
+        // log(response.data['data']);
+        // log("data['data']");
         // log('data status:${data['status']}');
         if (response.data['status'] == true) {
           final loginModel = LoginModel.fromJson(response.data['data']);
@@ -254,10 +254,23 @@ class ApiService {
         ),
       );
 
+      // Log the full response
+      log('API Response: ${response.data}');
+
       if (response.statusCode == 200) {
-        List<dynamic> data = response.data['list']['data'];
-        return data.map((item) => HelpModel.fromJson(item)).toList();
+        if (response.data['list'] != null &&
+            response.data['list']['data'] != null) {
+          List<dynamic> data = response.data['list']['data'];
+
+          log('Help List Data: $data');
+
+          return data.map((item) => HelpModel.fromJson(item)).toList();
+        } else {
+          log('No data found in the response');
+          return [];
+        }
       } else {
+        log('Failed to load help list: ${response.statusMessage}');
         throw Exception('Failed to load help list');
       }
     } catch (e) {

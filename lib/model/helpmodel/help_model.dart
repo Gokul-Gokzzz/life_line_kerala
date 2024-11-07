@@ -33,9 +33,9 @@ class HelpModel {
 
   factory HelpModel.fromJson(Map<String, dynamic> json) {
     return HelpModel(
-      id: json['id'],
-      memberId: json['member_id'],
-      memberFamilyId: json['member_family_id'],
+      id: json['id'] ?? '',
+      memberId: json['member_id'] ?? '',
+      memberFamilyId: json['member_family_id'] ?? '',
       helpType: json['help_type'] ?? '',
       incidentDate: json['incident_date'] ?? '',
       creditedDate: json['credited_date'] ?? '',

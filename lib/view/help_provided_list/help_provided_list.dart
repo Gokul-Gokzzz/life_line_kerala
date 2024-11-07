@@ -14,50 +14,53 @@ class HelpProvidedList extends StatefulWidget {
 }
 
 class _HelpProvidedListState extends State<HelpProvidedList> {
-  late Future<List<HelpModel>> _helpList;
+  late Future<void> _initialDataFuture;
   List<HelpModel>? _filteredHelpList;
   UserProfile? _userProfile;
-
   Config? _config;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _helpList = Future.value([]);
-    fetchInitialData();
+    _initialDataFuture = fetchInitialData();
   }
 
   Future<void> fetchInitialData() async {
-    _config = await ApiService().getConfig();
-    _userProfile = await ApiService().getUserProfile();
-    final helpList = await ApiService().getHelpProvidedList();
-    setState(() {
-      _filteredHelpList = helpList;
-    });
+    try {
+      _config = await ApiService().getConfig();
+      _userProfile = await ApiService().getUserProfile();
+      final helpList = await ApiService().getHelpProvidedList();
+      setState(() {
+        _filteredHelpList = helpList;
+      });
+    } catch (error) {
+      log('Error fetching initial data: $error');
+    }
   }
 
   Future<void> _refreshHelpList() async {
-    final helpList = await ApiService().getHelpProvidedList();
-    setState(() {
-      _filteredHelpList = helpList;
-    });
+    try {
+      final helpList = await ApiService().getHelpProvidedList();
+      setState(() {
+        _filteredHelpList = helpList;
+      });
+    } catch (error) {
+      log('Error refreshing help list: $error');
+    }
   }
 
   void _filterHelpList(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        _filteredHelpList = _filteredHelpList;
-      });
-    } else {
-      setState(() {
-        _filteredHelpList = _filteredHelpList?.where((help) {
-          final memberNameLower = help.memberName.toLowerCase();
-          final searchLower = query.toLowerCase();
-          return memberNameLower.contains(searchLower);
-        }).toList();
-      });
-    }
+    if (_filteredHelpList == null) return;
+    setState(() {
+      _filteredHelpList = query.isEmpty
+          ? _filteredHelpList
+          : _filteredHelpList!.where((help) {
+              return help.memberName
+                  .toLowerCase()
+                  .contains(query.toLowerCase());
+            }).toList();
+    });
   }
 
   @override
@@ -66,13 +69,12 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Padding(
-          padding: const EdgeInsets.only(left: 15, top: 15, right: 15),
+          padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const SizedBox(width: 20),
                   Expanded(
                     child: Container(
                       height: 40,
@@ -101,7 +103,6 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
                 ],
               ),
               const SizedBox(height: 20),
@@ -115,8 +116,8 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: FutureBuilder<List<HelpModel>>(
-                  future: _helpList,
+                child: FutureBuilder<void>(
+                  future: _initialDataFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -124,13 +125,10 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                       log('Error: ${snapshot.error}');
                       return const Center(
                           child: Text('Failed to load help list'));
-                    } else if (!snapshot.hasData ||
-                        _filteredHelpList == null ||
+                    } else if (_filteredHelpList == null ||
                         _filteredHelpList!.isEmpty) {
-                      log('No data: ${snapshot.data}');
                       return const Center(child: Text('No help provided.'));
                     } else {
-                      log('Data received: ${snapshot.data}');
                       return RefreshIndicator(
                         onRefresh: _refreshHelpList,
                         child: ListView.builder(
@@ -142,8 +140,7 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                                   const EdgeInsets.symmetric(vertical: 8.0),
                               child: Container(
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12.0, horizontal: 16.0),
+                                padding: const EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -204,7 +201,9 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
                                         value: help.creditedDate),
                                     InfoRow(
                                         title: 'Credited Amount',
-                                        value: help.creditedAmount),
+                                        value: help.creditedAmount != null
+                                            ? help.creditedAmount.toString()
+                                            : 'N/A'),
                                   ],
                                 ),
                               ),
@@ -229,10 +228,8 @@ class _HelpProvidedListState extends State<HelpProvidedList> {
         _userProfile!.image.isEmpty) {
       return const Icon(Icons.person, size: 80, color: Colors.grey);
     }
-
     final imageUrl =
         '${_config!.baseUrls.customerImageUrl}/${_userProfile!.image}';
-
     return Image.network(
       imageUrl,
       height: 80,
